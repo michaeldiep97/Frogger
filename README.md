@@ -1,2 +1,2 @@
 # Frogger
-COSC 1437 Final Project
+COSC 1437 Final Project, Built on Java
