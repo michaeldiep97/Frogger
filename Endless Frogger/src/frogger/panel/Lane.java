@@ -6,7 +6,7 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 
 public class Lane {
-	protected final int WIDTH = 1400, HEIGHT = 140, SPEED = 1;
+	protected final int WIDTH = 1400, HEIGHT = 140, SPEED = 20;
 	protected int x, y;
 	protected ImageIcon img;
 	protected Image scaledImg;
