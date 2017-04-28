@@ -18,15 +18,28 @@ public class GamePanel extends JPanel{
 	private final int DELAY = 20;
 	
 	private Lane lanes[];
+	
+	//-----------------------------
+	// Components
+	//-----------------------------
 	private JLabel timeLabel, distanceLabel, coinsLabel;
 	private JButton resetButton;
+	
+	//-----------------------------
+	// Timer
+	//-----------------------------
 	private Timer timer;
 	
+	//-----------------------------
+	// Stats
+	//-----------------------------
 	private int time, distance, coinCount;
 	
 	
 	public GamePanel() {
+		//------------------------------------------
 		// Initialization
+		//------------------------------------------
 		timer = new Timer(DELAY, new TimerListener());
 		
 		lanes = new Lane[7];
@@ -47,28 +60,40 @@ public class GamePanel extends JPanel{
 		coinsLabel = new JLabel("Coins: ");
 		resetButton = new JButton("Reset");
 		
-		//instantiate, initialize, and attach action listener to buttons/panel elements
+		//-----------------------------------------------------------------------------
+		// instantiate, initialize, and attach action listener to buttons/panel elements
+		//-----------------------------------------------------------------------------
 		ButtonListener bListener = new ButtonListener();
 		resetButton.addActionListener(bListener);
 		
-		//add all panel elements to the panel
+		//--------------------------------------------
+		// add all panel elements to the panel
+		//--------------------------------------------
 		this.add(timeLabel);
 		this.add(distanceLabel);
 		this.add(coinsLabel);
 		this.add(resetButton);
 		
-		
-		
-		//set basic panel characteristics
+		//--------------------------------------------
+		// set basic panel characteristics
+		//--------------------------------------------
 		setPreferredSize(new Dimension(WIDTH, TOTAL_HEIGHT));
 		setBackground(Color.black);
 		timer.start();
 	}
-	
+	//---------------------------------------------------
+	// Paint component
+	//---------------------------------------------------
 	public void paintComponent(Graphics page){
+		
+		//------------------------------------------------------
+		//Drawing lanes
+		//------------------------------------------------------
 		super.paintComponent(page);
 		for (int index = 0; index < lanes.length; index++)
 			lanes[index].img.paintIcon(this, page, lanes[index].getX(), lanes[index].getY());
+		//---------------------------------------------------------------
+		// Drawing labels
 		timeLabel.setFont(new Font(null , Font.PLAIN, 60 ));
 		timeLabel.setLocation(0, 0);
 		timeLabel.setSize(new Dimension(WIDTH / 5, LANE_HEIGHT));
@@ -102,6 +127,10 @@ public class GamePanel extends JPanel{
 		repaint();
 		}
 	}
+	
+	//-------------------------
+	// Button Listener
+	//-------------------------
 	private class ButtonListener implements ActionListener{
 		
 		@Override
