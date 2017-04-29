@@ -68,7 +68,7 @@ public class GamePanel extends JPanel{
 		resetButton = new JButton("Reset");
 		
 		//-----------------------------------------------------------------------------
-		// instantiate, initialize, and attach action listener to buttons/panel elements
+		// instantiate, initializes, and attach action listener to buttons/panel elements
 		//-----------------------------------------------------------------------------
 		ButtonListener bListener = new ButtonListener();
 		resetButton.addActionListener(bListener);
@@ -153,7 +153,7 @@ public class GamePanel extends JPanel{
 				}
 				
 				//-----------------
-				// starts as grass, grass always comes as single lanes, 
+				// grass always comes as single lanes, 
 				// which is why it doesn't use generationCounter
 				//-----------------
 				if (nextLaneType == true){
@@ -174,6 +174,10 @@ public class GamePanel extends JPanel{
 					//----------------------------------------------------
 					consecutiveLanes = r.nextInt(MAX_CONSECUTIVE_LANES - 1) + 2;
 				}
+				
+				//----------------------------------
+				// First generated lane is a river/road
+				//----------------------------------
 				else{ //nextLaneType == false
 					if (riverOrRoad == 0){
 						lanes[6] = new River(0, 0);
