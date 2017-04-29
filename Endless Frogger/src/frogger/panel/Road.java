@@ -20,6 +20,7 @@ public class Road extends Lane {
 		
 		roadCount++;
 	}
+	public static int getRoadCount(){ return roadCount; }
 	
 	public static void resetRoadCount(){ roadCount = 1; }
 
