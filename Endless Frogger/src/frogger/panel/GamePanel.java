@@ -80,9 +80,9 @@ public class GamePanel extends JPanel{
 		//-----------------------------------------------------------------------------
 		ButtonListener bListener = new ButtonListener();
 		startButton.addActionListener(bListener);
-		startButton.setFocusable(false);
+		startButton.setFocusable(true);
 		resetButton.addActionListener(bListener);
-		resetButton.setFocusable(false); // so focus stays on keyboard when reset button is pressed - Nicole
+		resetButton.setFocusable(true); // so focus stays on keyboard when reset button is pressed - Nicole
 		
 		//--------------------------------------------
 		// add all panel elements to the panel
@@ -96,7 +96,7 @@ public class GamePanel extends JPanel{
 		//--------------------------------
 		// KeyListener
 		//--------------------------------
-		setFocusable(false); // keeps focusable false until start is pressed
+		this.setFocusable(false); // keeps focusable false until start is pressed
 		addKeyListener(new DirectionListener()); // registers the key listener
 		
 		//--------------------------------------------
@@ -141,24 +141,24 @@ public class GamePanel extends JPanel{
 		page.setColor(Color.white);
 		page.fillRect(0, 0, WIDTH, LANE_HEIGHT);
 		
-		timeLabel.setFont(new Font(null , Font.PLAIN, 50 ));
+		timeLabel.setFont(new Font(null , Font.PLAIN, 45 ));
 		timeLabel.setLocation(0, 0);
 		timeLabel.setSize(new Dimension(WIDTH / 5, LANE_HEIGHT));
 		
-		distanceLabel.setFont(new Font(null , Font.PLAIN, 50 ));
+		distanceLabel.setFont(new Font(null , Font.PLAIN, 45 ));
 		distanceLabel.setLocation(WIDTH / 5, 0);
 		distanceLabel.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
 		
-		coinsLabel.setFont(new Font(null , Font.PLAIN, 50 ));
+		coinsLabel.setFont(new Font(null , Font.PLAIN, 45 ));
 		//coinsLabel.setText("Coins: " + Coin.getCoinCount());
 		coinsLabel.setLocation(WIDTH / 2, 0);
 		coinsLabel.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
 		
-		startButton.setFont(new Font(null , Font.PLAIN, 50 ));
+		startButton.setFont(new Font(null , Font.PLAIN, 45 ));
 		startButton.setLocation((int)(WIDTH * (3.0 / 8)), TOTAL_HEIGHT / 2);
 		startButton.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
 		
-		resetButton.setFont(new Font(null , Font.PLAIN, 50 ));
+		resetButton.setFont(new Font(null , Font.PLAIN, 45 ));
 		resetButton.setLocation(WIDTH / 4 * 3, 0);
 		resetButton.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
 	}
@@ -185,14 +185,16 @@ public class GamePanel extends JPanel{
 				lanes[index].setY(lanes[index].getY() + lanes[index].getSPEED());
 			Frog.setFrogY(Frog.getFrogY() +lanes[0].getSPEED());
 			
-			/*//------------------------------------
+			//------------------------------------
 			//  Checks if frogger is out of panel
 			//------------------------------------
-			if (Frog.getFrogX() < 0 || Frog.getFrogX() > WIDTH - 120)
+			if (Frog.getFrogX() < 0 || Frog.getFrogX() > WIDTH - 120){
 				timer.stop();
 				startButton.setText("Game Over");
-				//startButton.setVisible(true);
-				 */
+				startButton.setVisible(true);
+				setFocusable(false);
+			}
+
 			
 			//-------------
 			// time update
@@ -286,16 +288,19 @@ public class GamePanel extends JPanel{
 			// Start action
 			//---------------------------------------------
 			if (event.getSource() == startButton){
+				setFocusable(true);
 				timer.start();
 				startButton.setVisible(false);
-				setFocusable(true);
 			}
 			
 			//---------------------------------------------
 			// Restart action
 			//---------------------------------------------
 			if (event.getSource() == resetButton){
-				//startButton.setVisible(false);
+				
+				setFocusable(false);
+				startButton.setText("Start");
+				startButton.setVisible(true);
 				Road.resetRoadCount();
 				lanes = new Lane[]{
 						new Grass(0, TOTAL_HEIGHT - LANE_HEIGHT),
@@ -313,6 +318,9 @@ public class GamePanel extends JPanel{
 				
 				time = 0;
 				distance = 0;
+
+				repaint();
+				timer.stop();
 			}
 		}
 	}
