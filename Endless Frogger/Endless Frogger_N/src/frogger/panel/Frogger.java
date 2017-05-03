@@ -12,8 +12,7 @@ public class Frogger
       JFrame frame = new JFrame ("Frogger");
       frame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
 
-      GamePanel gP = new GamePanel();
-      frame.getContentPane().add(gP);
+      frame.getContentPane().add(new GamePanel());
       frame.pack();
       frame.setVisible(true);
    }

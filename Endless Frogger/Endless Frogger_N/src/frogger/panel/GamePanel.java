@@ -6,8 +6,6 @@ import java.awt.Font;
 import java.awt.Graphics; //for graphical display
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.Random;
 
 //import javax.swing.JComponent; //for paintComponent
@@ -17,18 +15,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel; //for extension
 
 public class GamePanel extends JPanel{
-	private static final int LANE_HEIGHT = 140, WIDTH = 1400, TOTAL_HEIGHT = (LANE_HEIGHT * 7);//14 pixels * 7 lanes
+	private final int LANE_HEIGHT = 140, WIDTH = 1400, TOTAL_HEIGHT = (LANE_HEIGHT * 7);//14 pixels * 7 lanes
 	private final int DELAY = 20;
 	
 	private Lane lanes[];
-	private Frog f;
-	private Graphics page;
 	
 	//-----------------------------
 	// Components
 	//-----------------------------
 	private JLabel timeLabel, distanceLabel, coinsLabel;
-	private JButton startButton, resetButton;
+	private JButton resetButton;
 	
 	//-----------------------------
 	// Timer and TimerListener
@@ -40,7 +36,6 @@ public class GamePanel extends JPanel{
 	// Stats
 	//-----------------------------
 	private int time, distance, coinCount;
-	private int t;  // used to update timer - Nicole
 	
 	//---------------------------
 	// Constructor
@@ -63,8 +58,6 @@ public class GamePanel extends JPanel{
 		};
 		Road.resetRoadCount();//this must be reset to ensure correct road generation whenever timer fires an ActionEvent
 		
-		f = new Frog((WIDTH / 2) + 20, (TOTAL_HEIGHT - (LANE_HEIGHT * 4)) + 20);
-		
 		time = 0;
 		distance = 0;
 		coinCount = 0;
@@ -72,17 +65,13 @@ public class GamePanel extends JPanel{
 		timeLabel = new JLabel("Time: ");
 		distanceLabel = new JLabel("Distance: ");
 		coinsLabel = new JLabel("Coins: ");
-		startButton = new JButton("Start");
 		resetButton = new JButton("Reset");
 		
 		//-----------------------------------------------------------------------------
 		// instantiate, initializes, and attach action listener to buttons/panel elements
 		//-----------------------------------------------------------------------------
 		ButtonListener bListener = new ButtonListener();
-		startButton.addActionListener(bListener);
-		startButton.setFocusable(false);
 		resetButton.addActionListener(bListener);
-		resetButton.setFocusable(false); // so focus stays on keyboard when reset button is pressed - Nicole
 		
 		//--------------------------------------------
 		// add all panel elements to the panel
@@ -90,30 +79,15 @@ public class GamePanel extends JPanel{
 		this.add(timeLabel);
 		this.add(distanceLabel);
 		this.add(coinsLabel);
-		this.add(startButton);
 		this.add(resetButton);
-		
-		//--------------------------------
-		// KeyListener
-		//--------------------------------
-		setFocusable(false); // keeps focusable false until start is pressed
-		addKeyListener(new DirectionListener()); // registers the key listener
 		
 		//--------------------------------------------
 		// set basic panel characteristics
 		//--------------------------------------------
 		setPreferredSize(new Dimension(WIDTH, TOTAL_HEIGHT));
 		setBackground(Color.black);
-		//Timer starts with start button
+		timer.start();
 	}
-	
-	//-------------------
-    // Accessors
-    //------------------
-    public static int getWIDTH(){ return WIDTH; }
-    public static int getLANE_HEIGHT(){ return LANE_HEIGHT; }
-    public static int getTOTAL_HEIGHT(){ return TOTAL_HEIGHT; }
-	
 	//---------------------------------------------------
 	// Paint component
 	//---------------------------------------------------
@@ -123,42 +97,27 @@ public class GamePanel extends JPanel{
 		// Drawing lanes
 		//------------------------------------------------------
 		super.paintComponent(page);
-		for (int index = 0; index < lanes.length; index++){
-			//lanes[index].img.paintIcon(this, page, lanes[index].getX(), lanes[index].getY()); //redundant
-			
-			// Draw lane and its coins
-			lanes[index].drawLane(page);
-		}
-		
-		//------------------------------------------------------
-		// Drawing Frog - Nicole
-		//------------------------------------------------------
-		Frog.draw().paintIcon(this, page, Frog.getFrogX(), Frog.getFrogY());
-				
+		for (int index = 0; index < lanes.length; index++)
+			lanes[index].img.paintIcon(this, page, lanes[index].getX(), lanes[index].getY());
 		//---------------------------------------------------------------
 		// Drawing labels
 		//---------------------------------------------------------------
 		page.setColor(Color.white);
 		page.fillRect(0, 0, WIDTH, LANE_HEIGHT);
 		
-		timeLabel.setFont(new Font(null , Font.PLAIN, 50 ));
+		timeLabel.setFont(new Font(null , Font.PLAIN, 60 ));
 		timeLabel.setLocation(0, 0);
 		timeLabel.setSize(new Dimension(WIDTH / 5, LANE_HEIGHT));
 		
-		distanceLabel.setFont(new Font(null , Font.PLAIN, 50 ));
+		distanceLabel.setFont(new Font(null , Font.PLAIN, 60 ));
 		distanceLabel.setLocation(WIDTH / 5, 0);
 		distanceLabel.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
 		
-		coinsLabel.setFont(new Font(null , Font.PLAIN, 50 ));
-		//coinsLabel.setText("Coins: " + Coin.getCoinCount());
+		coinsLabel.setFont(new Font(null , Font.PLAIN, 60 ));
 		coinsLabel.setLocation(WIDTH / 2, 0);
 		coinsLabel.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
 		
-		startButton.setFont(new Font(null , Font.PLAIN, 50 ));
-		startButton.setLocation((int)(WIDTH * (3.0 / 8)), TOTAL_HEIGHT / 2);
-		startButton.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
-		
-		resetButton.setFont(new Font(null , Font.PLAIN, 50 ));
+		resetButton.setFont(new Font(null , Font.PLAIN, 60 ));
 		resetButton.setLocation(WIDTH / 4 * 3, 0);
 		resetButton.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
 	}
@@ -178,30 +137,11 @@ public class GamePanel extends JPanel{
 		@Override
 		public void actionPerformed(ActionEvent event) {
 			
-			//-----------------
+			//-------------
 			// position update
-			//-----------------
+			//-------------
 			for (int index = 0; index < lanes.length; index++)
 				lanes[index].setY(lanes[index].getY() + lanes[index].getSPEED());
-			Frog.setFrogY(Frog.getFrogY() +lanes[0].getSPEED());
-			
-			/*//------------------------------------
-			//  Checks if frogger is out of panel
-			//------------------------------------
-			if (Frog.getFrogX() < 0 || Frog.getFrogX() > WIDTH - 120)
-				timer.stop();
-				startButton.setText("Game Over");
-				//startButton.setVisible(true);
-				 */
-			
-			//-------------
-			// time update
-			//-------------
-			t += 20; // delay is 20
-			if (t%1000 == 0) { // for every 1 second that has passed
-				time++;
-				timeLabel.setText(" Time: " + time + "s");
-			}
 			
 			//-------------------------------------------------------------------------------------------------------------------------
 			// shifts lanes down in lanes[], this deletes the Lane stored in lanes[0] by assigning the Lane stored in lanes[1] to it.
@@ -282,20 +222,11 @@ public class GamePanel extends JPanel{
 		
 		@Override
 		public void actionPerformed(ActionEvent event){
-			//---------------------------------------------
-			// Start action
-			//---------------------------------------------
-			if (event.getSource() == startButton){
-				timer.start();
-				startButton.setVisible(false);
-				setFocusable(true);
-			}
 			
 			//---------------------------------------------
 			// Restart action
 			//---------------------------------------------
 			if (event.getSource() == resetButton){
-				//startButton.setVisible(false);
 				Road.resetRoadCount();
 				lanes = new Lane[]{
 						new Grass(0, TOTAL_HEIGHT - LANE_HEIGHT),
@@ -304,10 +235,9 @@ public class GamePanel extends JPanel{
 						new Grass(0, TOTAL_HEIGHT - (LANE_HEIGHT * 4)),
 						new Road(0, TOTAL_HEIGHT - (LANE_HEIGHT * 5), false),
 						new Road(0, TOTAL_HEIGHT - (LANE_HEIGHT * 6), true),
-						new Grass(0, 0)
+						new Grass(0, 0)	
 				};
 				Road.resetRoadCount();
-				f.resetFrog();
 				tl.resetGenerationCounter();
 				tl.resetNextLaneType();
 				
@@ -316,54 +246,4 @@ public class GamePanel extends JPanel{
 			}
 		}
 	}
-	//----------------------------
-    // Keyboard Listener - Nicole
-    //----------------------------
-    private class DirectionListener implements KeyListener
-    {
-       //--------------------------------------------------------------
-       //  Responds to the user pressing arrow keys by adjusting the
-       //  image and image location accordingly.
-       //--------------------------------------------------------------
-       public void keyPressed(KeyEvent event) {
-    	   
-          switch (event.getKeyCode())
-          {
-          	// Up arrow
-          	case KeyEvent.VK_UP:
-            	Frog.setCurrentImage(Frog.getImage(Frog.u));
-            	if (Frog.y > Frog.maxY) // Keeps frog from going off the screen upward
-            		Frog.setFrogY(Frog.y += Frog.UP);
-            	distance++; // Increments and updates the distance traveled
-            	distanceLabel.setText("Distance: " + distance + "m");
-                break;
-                
-            // Down arrow
-          	case KeyEvent.VK_DOWN:
-          		Frog.setCurrentImage(Frog.getImage(Frog.d));
-            	Frog.setFrogY(Frog.y += Frog.DOWN);
-            	distance--; // Decrements and updates the distance traveled
-            	distanceLabel.setText("Distance: " + distance + "m");
-                break;
-              
-            // Left arrow
-          	case KeyEvent.VK_LEFT:
-          		Frog.setCurrentImage(Frog.getImage(Frog.l));
-          		Frog.setFrogX(Frog.x += Frog.LEFT);
-          		break;
-          		
-          	// Right arrow
-          	case KeyEvent.VK_RIGHT:
-          		Frog.setCurrentImage(Frog.getImage(Frog.r));
-          		Frog.setFrogX(Frog.x += Frog.RIGHT);
-          		break;
-           }
-        }
-       
-       //--------------------------------------------------------------
-       //  Provide empty definitions for unused event methods.
-       //--------------------------------------------------------------
-       public void keyTyped(KeyEvent event) {}
-       public void keyReleased(KeyEvent event) {}
-    }
 }
