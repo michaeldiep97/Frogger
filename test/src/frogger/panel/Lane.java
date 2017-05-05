@@ -14,8 +14,8 @@ public class Lane {
 	protected int x, y;
 	protected ImageIcon img;
 	protected Image scaledImg;
-	private Coin cn;
-	private Boolean disableCoin;
+	protected Coin cn;
+	protected Boolean disableCoin;
 	
 	protected Lane(int x, int y){
 		disableCoin = false;

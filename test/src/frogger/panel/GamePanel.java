@@ -17,6 +17,8 @@ import javax.swing.Timer;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel; //for extension
+import entity.*;
+
 
 public class GamePanel extends JPanel{
 	private static final int LANE_HEIGHT = 140, WIDTH = 1400, TOTAL_HEIGHT = (LANE_HEIGHT * 7);//14 pixels * 7 lanes
@@ -188,7 +190,6 @@ public class GamePanel extends JPanel{
 		//------------------------------------------------------
 		super.paintComponent(page);
 		for (int index = 0; index < lanes.length; index++){
-			//lanes[index].img.paintIcon(this, page, lanes[index].getX(), lanes[index].getY()); //redundant
 			
 			// Draw lane and its coins
 			lanes[index].drawLane(page);
@@ -285,6 +286,7 @@ public class GamePanel extends JPanel{
 				gameOver.setVisible(true);
 				setFocusable(false);
 				maxDistance = distance;
+				Entity.setEntitySpeed(0);
 				
 				//-------------------------------------------------------
 				// Append the distance high score to the end of the file
@@ -409,6 +411,7 @@ public class GamePanel extends JPanel{
 				setFocusable(true);
 				timer.start();
 				startButton.setVisible(false);
+				Entity.setEntitySpeed(1);
 			}
 			
 			//---------------------------------------------
@@ -420,6 +423,7 @@ public class GamePanel extends JPanel{
 				gameOver.setVisible(false);
 				startButton.setVisible(true);
 				Road.resetRoadCount();
+				Entity.setEntitySpeed(0);
 				lanes = new Lane[]{
 						new Grass(0, TOTAL_HEIGHT - LANE_HEIGHT),
 						new Grass(0, TOTAL_HEIGHT - (LANE_HEIGHT * 2)),
