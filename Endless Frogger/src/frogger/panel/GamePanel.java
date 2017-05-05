@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics; //for graphical display
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -19,6 +20,7 @@ import javax.swing.JPanel; //for extension
 public class GamePanel extends JPanel{
 	private static final int LANE_HEIGHT = 140, WIDTH = 1400, TOTAL_HEIGHT = (LANE_HEIGHT * 7);//14 pixels * 7 lanes
 	private final int DELAY = 20;
+	private final Rectangle screenBoundary;
 	
 	private Lane lanes[];
 	private Frog f;
@@ -27,7 +29,7 @@ public class GamePanel extends JPanel{
 	//-----------------------------
 	// Components
 	//-----------------------------
-	private JLabel timeLabel, distanceLabel, coinsLabel;
+	private JLabel timeLabel, distanceLabel, coinsLabel, gameOver;
 	private JButton startButton, resetButton;
 	
 	//-----------------------------
@@ -72,6 +74,7 @@ public class GamePanel extends JPanel{
 		timeLabel = new JLabel("Time: ");
 		distanceLabel = new JLabel("Distance: ");
 		coinsLabel = new JLabel("Coins: ");
+		gameOver = new JLabel("Game Over");
 		startButton = new JButton("Start");
 		resetButton = new JButton("Reset");
 		
@@ -90,8 +93,10 @@ public class GamePanel extends JPanel{
 		this.add(timeLabel);
 		this.add(distanceLabel);
 		this.add(coinsLabel);
+		this.add(gameOver);
 		this.add(startButton);
 		this.add(resetButton);
+		gameOver.setVisible(false);
 		
 		//--------------------------------
 		// KeyListener
@@ -103,6 +108,7 @@ public class GamePanel extends JPanel{
 		// set basic panel characteristics
 		//--------------------------------------------
 		setPreferredSize(new Dimension(WIDTH, TOTAL_HEIGHT));
+		screenBoundary = new Rectangle(WIDTH, TOTAL_HEIGHT);
 		setBackground(Color.black);
 		//Timer starts with start button
 	}
@@ -150,7 +156,7 @@ public class GamePanel extends JPanel{
 		distanceLabel.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
 		
 		coinsLabel.setFont(new Font(null , Font.PLAIN, 45 ));
-		//coinsLabel.setText("Coins: " + Coin.getCoinCount());
+		coinsLabel.setText("Coins: " + Coin.getCoinCount());
 		coinsLabel.setLocation(WIDTH / 2, 0);
 		coinsLabel.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
 		
@@ -161,9 +167,15 @@ public class GamePanel extends JPanel{
 		resetButton.setFont(new Font(null , Font.PLAIN, 45 ));
 		resetButton.setLocation(WIDTH / 4 * 3, 0);
 		resetButton.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
+		
+		gameOver.setForeground(Color.red);
+		gameOver.setFont(new Font(null , Font.ITALIC, 45 ));
+		gameOver.setLocation((int)(WIDTH * (3.0 / 8) + 50), TOTAL_HEIGHT / 2);
+		gameOver.setSize(new Dimension(WIDTH / 4, LANE_HEIGHT));
 	}
 	
 	//-------------------------------------------------------------------
+	//******* TIMER ************* 
 	// Updates position of each lane whenever timer fires an ActionEvent
 	// and propagates lane deletion/creation
 	//-------------------------------------------------------------------
@@ -188,13 +200,20 @@ public class GamePanel extends JPanel{
 			//------------------------------------
 			//  Checks if frogger is out of panel
 			//------------------------------------
-			if (Frog.getFrogX() < 0 || Frog.getFrogX() > WIDTH - 120){
+			if ( !screenBoundary.contains(Frog.getHitBox()) && Frog.getFrogY() > 0){
 				timer.stop();
-				startButton.setText("Game Over");
-				startButton.setVisible(true);
+				gameOver.setVisible(true);
 				setFocusable(false);
 			}
-
+			//------------------------------------
+			// Coin Collision (an event would have handled this well)
+			//------------------------------------
+			for (int index = 0; index < lanes.length; index++){
+				if (lanes[index].getCoin().getHitBox().intersects(Frog.getHitBox())){
+					Coin.coinIncrement();
+					lanes[index].disableCoin(true); //prevents drawCoin and moves coin location off-screen until lane deletion
+				}
+			}
 			
 			//-------------
 			// time update
@@ -299,7 +318,7 @@ public class GamePanel extends JPanel{
 			if (event.getSource() == resetButton){
 				
 				setFocusable(false);
-				startButton.setText("Start");
+				gameOver.setVisible(false);
 				startButton.setVisible(true);
 				Road.resetRoadCount();
 				lanes = new Lane[]{
@@ -373,5 +392,13 @@ public class GamePanel extends JPanel{
        //--------------------------------------------------------------
        public void keyTyped(KeyEvent event) {}
        public void keyReleased(KeyEvent event) {}
+    }
+    private class CollisionEvent extends ActionEvent{
+    	
+		public CollisionEvent(Object arg0, int arg1, String arg2) {
+			super(arg0, arg1, arg2);
+			// TODO Auto-generated constructor stub
+		}
+    	
     }
 }

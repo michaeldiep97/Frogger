@@ -1,5 +1,7 @@
 package frogger.panel;
-
+//****************************
+// -Designed by Michael Diep
+//****************************
 import java.awt.Image;
 import java.awt.Graphics;
 import javax.swing.ImageIcon;

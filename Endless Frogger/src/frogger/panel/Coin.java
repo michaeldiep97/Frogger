@@ -4,9 +4,12 @@ package frogger.panel;
 // Lane that is instantiated passes a y coordinate
 // to instantiate its coin. Coin's x is selected at
 // random.
+//  -Designed by Michael Diep
 //********************************************************
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Random;
 import javax.swing.ImageIcon;
 
@@ -17,6 +20,7 @@ public class Coin {
 	private ImageIcon img;
 	private Image scaledImg;
 	private Random r;
+	private Rectangle hitBox; //for collision detection
 	
 	public Coin(int y) {
 		r = new Random();
@@ -25,7 +29,7 @@ public class Coin {
 		img = new ImageIcon("coin.png");
 		scaledImg = img.getImage().getScaledInstance(WIDTH, HEIGHT, Image.SCALE_FAST);//Scales image
 		img = new ImageIcon(scaledImg);
-		coinCount++;
+		hitBox = new Rectangle(randomX, y, WIDTH, HEIGHT);
 	}
 	
 	//-------------
@@ -37,13 +41,18 @@ public class Coin {
 	public int getSPEED(){ return SPEED; }
 	public int getX(){ return randomX; }
 	public int getY(){ return y; }
+	public Rectangle getHitBox(){ return hitBox; }
 	
 	//------------
 	// Mutators
 	//------------
 	public void setX(int x){ randomX = x; }
-	public void setY(int y){ this.y = y; }
+	public void setY(int y){ 
+		this.y = y; 
+		hitBox.setLocation(new Point(randomX, y));
+	}
 	public static void setCoinCount(int c){ coinCount = c; }
+	public static void coinIncrement(){ coinCount++; }
 	
 	//------------
 	// Actions
