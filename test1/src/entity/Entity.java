@@ -1,7 +1,11 @@
 package entity;
-
+//**************************************
+// -Designed by Carla
+//**************************************
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Random;
 import javax.swing.ImageIcon;
 
@@ -18,6 +22,7 @@ public class Entity{
 	protected int randomX;
 	protected ImageIcon img;
 	protected Image scaledImg;
+	protected Rectangle hitBox;//added for collision detection
 	protected Entity( int y, int direction) {
 		r = new Random();
 		randomX = (r.nextInt(10)) * 140;
@@ -26,43 +31,35 @@ public class Entity{
 		
 		this.direction = direction;
 	}
-	public void setDirection (int direction){
-		r = new Random();
-		int  n = r.nextInt(1) + 0;
-		if( n == 0) 
-			direction = LEFT;
-		else
-			direction = RIGHT;
-	}
-	public static void setEntitySpeed(int s){ entitySpeed = s; }
-	
-	public int getEntitySpeed(){
-		/*moveX = randomX;
-		moveX =+ entitySpeed;
-		
-        if (moveX <= 0 || moveX >= WIDTH)
-        	entitySpeed *= -1;*/
-		return entitySpeed;
-	}
-	
-	
 	
 	public void drawEntity(Graphics page){
 		page.drawImage(img.getImage(), 700, y, 300, HEIGHT, null);
 		
 	}
-	//Accessors
+	//----------------
+	// Accessors
+	//----------------
 	public int getHEIGHT(){ return HEIGHT; }
-	
 	public int getSPEED(){ return SPEED; }
 	public int getX(){ return x; }
 	public int getY(){ return y; }
 	public int getDirection(){ return direction; }
+	public Rectangle getHitBox(){ return hitBox; }
+	public static int getEntitySpeed(){
+		return entitySpeed;
+	}
 	//------------
 	// Mutators
 	//------------
-	public void setX(int x){ this.x = x; }
-	public void setY(int y){ this.y = y; }//
+	public void setX(int x){ 
+		this.x = x; 
+		hitBox.setLocation(new Point(x, y));
+	}
+	public void setY(int y){ 
+		this.y = y; 
+		hitBox.setLocation(new Point(x, y));
+	}
+	public static void setEntitySpeed(int s){ entitySpeed = s; }
 	
 }
 

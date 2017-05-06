@@ -1,4 +1,10 @@
 package frogger.panel;
+//------------------------------------------
+// GamePanel displays all objects and has an 
+// engine built-in
+//  -Base panel design by Michael
+//  -implementation of files, keylisteners etc. by Nicole
+//------------------------------------------
 import java.io.*;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -19,7 +25,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel; //for extension
 import entity.*;
-
+import lanes.*;
 
 public class GamePanel extends JPanel{
 	private static final int LANE_HEIGHT = 140, WIDTH = 1400, TOTAL_HEIGHT = (LANE_HEIGHT * 7);//14 pixels * 7 lanes
@@ -68,11 +74,11 @@ public class GamePanel extends JPanel{
 				new Road(0, TOTAL_HEIGHT - (LANE_HEIGHT * 6), true),
 				new Grass(0, 0)	
 		};
-		Road.resetRoadCount();//this must be reset to ensure correct road generation whenever timer fires an ActionEvent
+		Road.resetRoadCount();//this must be reset to ensure correct road generation whenever timer fires an ActionEvent - Michael
 		
 		f = new Frog((WIDTH / 2) + 20, (TOTAL_HEIGHT - (LANE_HEIGHT * 4)) + 20);
-		dFile = new File("frogger_HIGH_SCORE.txt"); // Stores high scores for distance
-		cFile = new File("frogger_HIGH_SCORE_COINS.txt"); // Stores high scores for coin count
+		dFile = new File("frogger_HIGH_SCORE.txt"); // Stores high scores for distance - Nicole
+		cFile = new File("frogger_HIGH_SCORE_COINS.txt"); // Stores high scores for coin count - Nicole
 		
 		time = 0;
 		distance = 0;
@@ -164,7 +170,7 @@ public class GamePanel extends JPanel{
 		gameOver.setVisible(false);
 		
 		//--------------------------------
-		// KeyListener
+		// KeyListener - nicole
 		//--------------------------------
 		this.setFocusable(false); // keeps focusable false until start is pressed
 		addKeyListener(new DirectionListener()); // registers the key listener
@@ -196,7 +202,7 @@ public class GamePanel extends JPanel{
 		super.paintComponent(page);
 		for (int index = 0; index < lanes.length; index++){
 			
-			// Draw lane and its coins
+			// Draw lane and its coins and entities
 			lanes[index].drawLane(page);
 		}
 		
@@ -280,17 +286,46 @@ public class GamePanel extends JPanel{
 			// position update
 			//-----------------
 			for (int index = 0; index < lanes.length; index++){
-				lanes[index].setY(lanes[index].getY() + lanes[index].getSPEED());
+				Lane temp = lanes[index];
+				temp.setY(temp.getY() + temp.getSPEED());
 				//---------------------
 				// Coin collision logic
 				//---------------------
-				if (lanes[index].getCoin().getHitBox().intersects(Frog.getHitBox())){
+				if (temp.getCoin().getHitBox().intersects(Frog.getHitBox())){
 					Coin.coinIncrement();
-					lanes[index].disableCoin(true); //prevents drawCoin and moves coin location off-screen until lane deletion
+					temp.disableCoin(true); //prevents drawCoin and moves coin location off-screen until lane deletion
 					if (Coin.getCoinCount() > maxCoinCount)
 						maxCoinCount = Coin.getCoinCount();
 				  	coinsLabel.setText("Coins: " + Coin.getCoinCount()); // Updates the coin count
 			  		maxCoinsLabel.setText("\t\t\t\t" + maxCoinCount + " coins"); // Updates the max coin count
+				}
+				//-----------------------
+				// Car collision logic
+				//-----------------------
+				if (temp.isRoad()){
+					if (((Road) temp).getCar().getHitBox().intersects(Frog.getHitBox())){
+						timer.stop();
+						gameOver.setVisible(true);
+						setFocusable(false);
+						maxDistance = distance;
+						Entity.setEntitySpeed(0);
+					}
+				}
+				//-------------------------
+				// River Collision logic
+				//-------------------------
+				if (temp.isRiver()){
+					if(temp.getHitBox().contains(Frog.getHitBox()) && ((River) temp).getLog().getHitBox().contains(Frog.getHitBox())){
+						Frog.setFrogX(((River) temp).getLog().getX() + 100 );//Frog.getFrogX() + (int)(10.6 * Entity.getEntitySpeed() * ((River) temp).getLog().getDirection()));
+					}
+					else if (temp.getHitBox().contains(Frog.getHitBox()) && !((River) temp).getLog().getHitBox().contains(Frog.getHitBox())){
+						//gameOver
+						timer.stop();
+						gameOver.setVisible(true);
+						setFocusable(false);
+						maxDistance = distance;
+						Entity.setEntitySpeed(0);
+					}
 				}
 			}
 			Frog.setFrogY(Frog.getFrogY() +lanes[0].getSPEED());

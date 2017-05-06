@@ -10,7 +10,7 @@ public class Frog {
 	// Frog Dimensions
 	//----------------
 	private final static int HEIGHT = 100, WIDTH = 100;
-	private static Rectangle hitBox; //added for collision detection
+	private static Rectangle hitBox; //added for collision detection - Michael
 	
 	//-------------
 	// coordinates
@@ -49,9 +49,7 @@ public class Frog {
 		//---------------
 		// Initialization
 		//---------------
-    	//////////////////////////////////////////////
     	hitBox = new Rectangle(x, y, WIDTH, HEIGHT);
-    	//////////////////////////////////////////////
     	Frog.x = x;
         Frog.y = y;
         
@@ -90,11 +88,9 @@ public class Frog {
 	//-------------
     public static int getFrogX() { return x; }
     public static int getFrogY() { return y; }
-    /////////////////////////////////////////////////////
     public static int getHEIGHT(){ return HEIGHT; }
     public static int getWIDTH(){ return WIDTH; }
     public static Rectangle getHitBox(){ return hitBox; }
-    /////////////////////////////////////////////////////
     public static ImageIcon getCurrentImage () { return currentImage; }
     public static ImageIcon getImage (char i) { 
     	ImageIcon temp = up;
@@ -118,7 +114,6 @@ public class Frog {
 	//------------
 	// Mutators
 	//------------
-    /////////////////////////////////////////////////////
     public static void setFrogX(int xnew) { 
     	x = xnew; 
     	hitBox.setLocation(xnew, y);
@@ -127,16 +122,8 @@ public class Frog {
     	y = ynew; 
     	hitBox.setLocation(x, ynew);
     }
-    ///////////////////////////////////////////
     public static void setCurrentImage (ImageIcon newImage) { currentImage = newImage; }
     
-	//------------
-	// Die
-	//------------
-    public void die () {
-    	
-    }
-	
 	//------------
 	// Draw
 	//------------

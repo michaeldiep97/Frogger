@@ -1,4 +1,7 @@
 package entity;
+//**************************************
+//-Designed by Carla
+//**************************************
 import java.awt.Image;
 
 import java.awt.Graphics;
